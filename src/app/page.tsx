@@ -1,7 +1,14 @@
+import { Flex, Text } from "@chakra-ui/react";
+
 export default function Home() {
   return (
-    <main>
-      <h1>Smile Gestor Pro</h1>
-    </main>
+    <Flex
+      background="clinic.900"
+      height="100vh"
+      alignItems="center"
+      justifyContent="center"
+    >
+      <Text fontSize={30}>Smile Gestor Pro</Text>
+    </Flex>
   );
 }
