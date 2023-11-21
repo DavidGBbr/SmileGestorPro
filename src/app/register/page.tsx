@@ -4,18 +4,19 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import logoImg from "../../../public/images/logo.svg";
 import Link from "next/link";
-const Login = () => {
+
+const Register = () => {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  function handleLogin() {
-    console.log({ email, password });
+  function handleRegister() {
+    console.log({ name, email, password });
   }
 
   useEffect(() => {
-    document.title = "Smile Gestor PRO - login";
+    document.title = "Cadastre-se no Smile Gestor Pro";
   }, []);
-
   return (
     <>
       <Flex
@@ -37,25 +38,38 @@ const Login = () => {
 
           <Input
             background="clinic.400"
+            variant="filled"
+            size="lg"
+            placeholder="Nome da clínica"
+            color="clinic.100"
+            type="email"
+            mb={3}
             _hover={{ bg: "#2d375f" }}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+
+          <Input
+            background="clinic.400"
             variant="filled"
             size="lg"
             placeholder="Digite seu email..."
             color="clinic.100"
             type="email"
             mb={3}
+            _hover={{ bg: "#2d375f" }}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
 
           <Input
             background="clinic.400"
-            _hover={{ bg: "#2d375f" }}
             variant="filled"
             size="lg"
             placeholder="Digite sua senha..."
             color="clinic.100"
             type="password"
+            _hover={{ bg: "#2d375f" }}
             mb={6}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -67,15 +81,15 @@ const Login = () => {
             color="gray.900"
             size="lg"
             _hover={{ bg: "#ffb13e" }}
-            onClick={handleLogin}
+            onClick={handleRegister}
           >
-            Acessar
+            Cadastrar
           </Button>
 
           <Center mt={2}>
-            <Link href="/register">
+            <Link href="/login">
               <Text cursor="pointer" color="clinic.100">
-                Ainda não possui conta? <strong>Cadastre-se</strong>
+                Já possui conta? <strong>Faça login</strong>
               </Text>
             </Link>
           </Center>
@@ -85,4 +99,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Register;
