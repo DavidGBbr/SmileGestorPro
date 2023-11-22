@@ -1,7 +1,8 @@
 "use client";
-import { createContext, ReactNode, useState } from "react";
-import { destroyCookie } from "nookies";
+import { createContext, ReactNode, useEffect, useState } from "react";
+import { destroyCookie, setCookie } from "nookies";
 import Router from "next/router";
+import { api } from "../services/apiClient";
 
 interface AuthContextData {
   user: UserProps;
@@ -12,6 +13,7 @@ interface AuthContextData {
 interface UserProps {
   id: string;
   name: string;
+  email: string;
   address: string;
   subscriptions?: SubscriptionProps | null;
 }
@@ -47,7 +49,32 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const isAuthenticated = !!user;
 
   async function signIn({ email, password }: SignInProps) {
-    console.log({ email, password });
+    try {
+      const response = await api.post("/session", {
+        email,
+        password,
+      });
+
+      const { id, name, address, token, subscriptions } = response.data;
+
+      setCookie(undefined, "@clinic.token", token, {
+        maxAge: 60 * 60 * 24 * 30,
+        path: "/",
+      });
+
+      setUser({
+        id,
+        name,
+        email,
+        address,
+        subscriptions,
+      });
+
+      api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+      window.location.href = "/dashboard";
+    } catch (error) {
+      console.log("Erro ao fazer login: ", error);
+    }
   }
 
   return (

@@ -1,9 +1,9 @@
 "use client";
 import { Flex, Center, Text, Input, Button } from "@chakra-ui/react";
+import { Link } from "@chakra-ui/next-js";
 import React, { useContext, useEffect, useState } from "react";
 import Image from "next/image";
 import logoImg from "../../../public/images/logo.svg";
-import Link from "next/link";
 import { AuthContext } from "@/context/AuthContext";
 
 const Login = () => {
