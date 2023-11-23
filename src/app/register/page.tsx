@@ -1,17 +1,24 @@
 "use client";
 import { Flex, Center, Text, Input, Button } from "@chakra-ui/react";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Image from "next/image";
 import logoImg from "../../../public/images/logo.svg";
 import Link from "next/link";
+import { AuthContext } from "@/context/AuthContext";
 
 const Register = () => {
+  const { signUp } = useContext(AuthContext);
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  function handleRegister() {
-    console.log({ name, email, password });
+  async function handleRegister() {
+    if (name === "" || email === "" || password === "") {
+      return;
+    }
+
+    await signUp({ name, email, password });
   }
 
   useEffect(() => {
