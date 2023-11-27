@@ -1,6 +1,6 @@
 "use client";
-import { createContext, ReactNode, useState } from "react";
-import { destroyCookie, setCookie } from "nookies";
+import { createContext, ReactNode, useEffect, useState } from "react";
+import { destroyCookie, parseCookies, setCookie } from "nookies";
 import Router from "next/router";
 import { api } from "../services/apiClient";
 
@@ -55,6 +55,25 @@ export const signOut = () => {
 export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<UserProps>();
   const isAuthenticated = !!user;
+
+  useEffect(() => {
+    const checkUser = async () => {
+      try {
+        const { "@clinic.token": token } = parseCookies();
+
+        if (token) {
+          const response = await api.get("/me");
+          const { id, name, address, email, subscriptions } =
+            response.data.user;
+          setUser({ id, name, address, email, subscriptions });
+        }
+      } catch (error) {
+        signOut();
+      }
+    };
+
+    checkUser();
+  }, []);
 
   async function signIn({ email, password }: SignInProps) {
     try {
