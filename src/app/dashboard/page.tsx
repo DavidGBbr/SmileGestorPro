@@ -1,4 +1,5 @@
 "use client";
+import { Sidebar } from "@/components/sidebar";
 import { Flex, Text } from "@chakra-ui/react";
 import React, { useEffect } from "react";
 
@@ -8,9 +9,11 @@ const Dashboard = () => {
   }, []);
 
   return (
-    <Flex>
-      <Text>Bem vindo ao dashboard</Text>
-    </Flex>
+    <Sidebar>
+      <Flex>
+        <Text>Bem vindo ao dashboard</Text>
+      </Flex>
+    </Sidebar>
   );
 };
 
