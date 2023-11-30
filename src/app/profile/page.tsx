@@ -1,5 +1,5 @@
 "use client";
-import { useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
   Flex,
   Text,
@@ -11,11 +11,54 @@ import {
 } from "@chakra-ui/react";
 import { Sidebar } from "@/components/sidebar";
 import Link from "next/link";
+import { AuthContext } from "@/context/AuthContext";
+import { api } from "@/services/apiClient";
+
+interface ProfileProps {
+  id: string;
+  name: string;
+  email: string;
+  address: string | null;
+  premium: boolean;
+}
 
 export default function profile() {
+  const [profile, setProfile] = useState<ProfileProps>();
+  const [name, setName] = useState("");
+  const [address, setAddress] = useState("");
+  const { logoutUser } = useContext(AuthContext);
+
   useEffect(() => {
     document.title = "Minha Conta - SmileGestorPRO";
   }, []);
+
+  useEffect(() => {
+    const handleData = async () => {
+      const response = await api.get("/me");
+      setProfile({
+        id: response.data.user.id,
+        name: response.data.user.name,
+        email: response.data.user.email,
+        address: response.data.user.address,
+        premium:
+          response.data.user.subscriptions?.status === "active" ? true : false,
+      });
+    };
+    try {
+      handleData();
+    } catch (error) {
+      console.log("Renderizando dados:", error);
+    }
+  }, []);
+
+  useEffect(() => {
+    setName(profile?.name);
+    setAddress(profile?.address);
+  }, [profile]);
+
+  const handleLogout = async () => {
+    await logoutUser();
+  };
   return (
     <>
       <Sidebar>
@@ -58,6 +101,8 @@ export default function profile() {
                 type="text"
                 mb={3}
                 borderColor={useColorModeValue("gray.700", "gray.900")}
+                value={name}
+                onChange={(e) => setName(e.target.value)}
               />
               <Text mb={2} fontSize="xl" fontWeight="bold">
                 Endereço:
@@ -70,6 +115,8 @@ export default function profile() {
                 type="text"
                 mb={3}
                 borderColor={useColorModeValue("gray.700", "gray.900")}
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
               />
 
               <Text mb={2} fontSize="xl" fontWeight="bold">
@@ -87,8 +134,12 @@ export default function profile() {
                 justifyContent="space-between"
                 borderColor={useColorModeValue("gray.700", "gray.900")}
               >
-                <Text p={2} fontSize="lg" color="#4dffb4">
-                  Plano gratuito
+                <Text
+                  p={2}
+                  fontSize="lg"
+                  color={profile?.premium ? "#fba931" : "#4dffb4"}
+                >
+                  Plano {profile?.premium ? "Premium" : "Grátis"}
                 </Text>
                 <Link href="/planos">
                   <Box
@@ -123,6 +174,7 @@ export default function profile() {
                 color="red.500"
                 size="lg"
                 _hover={{ bg: "transparent" }}
+                onClick={handleLogout}
               >
                 Sair da conta
               </Button>
