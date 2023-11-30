@@ -47,7 +47,7 @@ export default function profile() {
     try {
       handleData();
     } catch (error) {
-      console.log("Renderizando dados:", error);
+      console.log("Erro ao buscar dados:", error);
     }
   }, []);
 
@@ -59,6 +59,25 @@ export default function profile() {
   const handleLogout = async () => {
     await logoutUser();
   };
+
+  const handleUpdateUser = () => {
+    if (name === "" || address === "") {
+      return;
+    }
+    const updateUser = async () => {
+      await api.put("/users", {
+        name: name,
+        address: address,
+      });
+      alert("Dados alterados com sucesso!");
+    };
+    try {
+      updateUser();
+    } catch (error) {
+      console.log("Erro ao alterar dados:", error);
+    }
+  };
+
   return (
     <>
       <Sidebar>
@@ -162,6 +181,7 @@ export default function profile() {
                 bg="button.cta"
                 size="lg"
                 _hover={{ bg: "#ffbd3e" }}
+                onClick={handleUpdateUser}
               >
                 Salvar
               </Button>
