@@ -45,7 +45,9 @@ const procedures = () => {
           </Heading>
 
           <Link href="procedures/new">
-            <Button>Cadastrar novo</Button>
+            <Button bg="clinic.400" color="#fff" _hover={{ bg: "#2d375f" }}>
+              Cadastrar novo
+            </Button>
           </Link>
 
           <Stack
