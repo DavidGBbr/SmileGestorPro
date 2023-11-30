@@ -6,6 +6,7 @@ import {
   Flex,
   Icon,
   Drawer,
+  DrawerOverlay,
   DrawerContent,
   useColorModeValue,
   Text,
@@ -40,7 +41,7 @@ interface MobileProps extends FlexProps {
 
 const LinkItems: Array<LinkItemProps> = [
   { name: "Agenda", icon: FaTooth, route: "/dashboard" },
-  { name: "Serviços", icon: FiClipboard, route: "/services" },
+  { name: "Procedimentos", icon: FiClipboard, route: "/procedures" },
   { name: "Minha conta", icon: FiSettings, route: "/profile" },
 ];
 
@@ -159,7 +160,7 @@ export function Sidebar({ children }: { children: ReactNode }) {
   return (
     <Box minH="100vh" bg="clinic.900">
       <SidebarContent
-        onClose={() => onClose}
+        onClose={() => onClose()}
         display={{ base: "none", md: "block" }}
       />
 
@@ -172,6 +173,7 @@ export function Sidebar({ children }: { children: ReactNode }) {
         size="full"
         onClose={onClose}
       >
+        <DrawerOverlay />
         <DrawerContent>
           <SidebarContent onClose={() => onClose()} color="#fff" />
         </DrawerContent>
