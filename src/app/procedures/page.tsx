@@ -24,6 +24,7 @@ interface ProceduresItem {
 
 const procedures = () => {
   const [procedures, setProcedures] = useState<ProceduresItem[]>();
+  const [disableProcedure, setDisableProcedure] = useState("enabled");
   const [isMobile] = useMediaQuery("(max-width: 500px)");
 
   useEffect(() => {
@@ -46,6 +47,31 @@ const procedures = () => {
       console.log(error);
     }
   }, []);
+
+  useEffect(() => {
+    const changeProcedures = async () => {
+      const apiClient = setupAPIClient();
+      const response = await apiClient.get("/procedures", {
+        params: {
+          status: disableProcedure === "disabled" ? false : true,
+        },
+      });
+      setProcedures(response.data);
+    };
+    try {
+      changeProcedures();
+    } catch (error) {
+      console.log(error);
+    }
+  }, [disableProcedure]);
+
+  const handleDisable = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.value === "disabled") {
+      setDisableProcedure("enabled");
+    } else {
+      setDisableProcedure("disabled");
+    }
+  };
 
   return (
     <Sidebar>
@@ -86,7 +112,13 @@ const procedures = () => {
             <Text fontWeight="bold" color="#fff">
               ATIVOS
             </Text>
-            <Switch colorScheme="green" size="lg" />
+            <Switch
+              colorScheme="green"
+              size="lg"
+              value={disableProcedure}
+              onChange={(e) => handleDisable(e)}
+              isChecked={disableProcedure === "disabled" ? false : true}
+            />
           </Stack>
         </Flex>
       </Flex>
