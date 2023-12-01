@@ -1,22 +1,52 @@
 "use client";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Sidebar } from "@/components/sidebar";
 import {
   Button,
   Flex,
   Heading,
   Input,
+  Text,
   useColorModeValue,
   useMediaQuery,
 } from "@chakra-ui/react";
 import Link from "next/link";
 import { FiChevronLeft } from "react-icons/fi";
+import { api } from "@/services/apiClient";
 
 export default function newProcedure() {
+  const [subscription, setSubscription] = useState(false);
+  const [count, setCount] = useState(0);
   const [isMobile] = useMediaQuery("(max-width: 500px)");
 
   useEffect(() => {
     document.title = "SmileGestorPRO - Novo serviço";
+  }, []);
+
+  useEffect(() => {
+    const getSubscription = async () => {
+      const response = await api.get("/procedure/check");
+      setSubscription(
+        response.data?.subscriptions?.status === "active" ? true : false
+      );
+    };
+    try {
+      getSubscription();
+    } catch (error) {
+      console.log(error);
+    }
+  }, []);
+
+  useEffect(() => {
+    const getProceduresAmount = async () => {
+      const response = await api.get("/procedure/count");
+      setCount(Number(response.data.count));
+    };
+    try {
+      getProceduresAmount();
+    } catch (error) {
+      console.log(error);
+    }
   }, []);
 
   return (
@@ -80,6 +110,7 @@ export default function newProcedure() {
             bg="gray.900"
             mb={3}
             borderColor={useColorModeValue("gray.700", "gray.900")}
+            disabled={!subscription && count >= 5}
           />
 
           <Input
@@ -90,6 +121,7 @@ export default function newProcedure() {
             bg="gray.900"
             mb={4}
             borderColor={useColorModeValue("gray.700", "gray.900")}
+            disabled={!subscription && count >= 5}
           />
 
           <Button
@@ -99,9 +131,26 @@ export default function newProcedure() {
             mb={6}
             bg="button.cta"
             _hover={{ bg: "#ffb13e" }}
+            disabled={!subscription && count >= 5}
           >
             Cadastrar
           </Button>
+
+          {!subscription && count >= 5 && (
+            <Flex
+              color="#fff"
+              direction="row"
+              align="center"
+              justifyContent="center"
+            >
+              <Text>Você atingiu seu limite de procedimentos</Text>
+              <Link href="/planos">
+                <Text fontWeight="bold" color="#31fb6a" cursor="pointer" ml={1}>
+                  Seja premium
+                </Text>
+              </Link>
+            </Flex>
+          )}
         </Flex>
       </Flex>
     </Sidebar>
