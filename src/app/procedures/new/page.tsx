@@ -13,10 +13,13 @@ import {
 import Link from "next/link";
 import { FiChevronLeft } from "react-icons/fi";
 import { api } from "@/services/apiClient";
+import { setupAPIClient } from "@/services/api";
 
 export default function newProcedure() {
   const [subscription, setSubscription] = useState(false);
   const [count, setCount] = useState(0);
+  const [name, setName] = useState("");
+  const [price, setPrice] = useState("");
   const [isMobile] = useMediaQuery("(max-width: 500px)");
 
   useEffect(() => {
@@ -48,6 +51,25 @@ export default function newProcedure() {
       console.log(error);
     }
   }, []);
+
+  const handleRegister = async () => {
+    if (name === "" || price === "") {
+      return;
+    }
+
+    try {
+      const apiClient = setupAPIClient();
+      await apiClient.post("/procedure", {
+        name: name,
+        price: Number(price),
+      });
+
+      window.location.href = "/procedures";
+    } catch (error) {
+      console.log(error);
+      alert("Erro ao cadastrar.");
+    }
+  };
 
   return (
     <Sidebar>
@@ -108,9 +130,12 @@ export default function newProcedure() {
             type="text"
             w="85%"
             bg="gray.900"
+            color="#fff"
             mb={3}
             borderColor={useColorModeValue("gray.700", "gray.900")}
             disabled={!subscription && count >= 5}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
           />
 
           <Input
@@ -119,9 +144,12 @@ export default function newProcedure() {
             type="text"
             w="85%"
             bg="gray.900"
+            color="#fff"
             mb={4}
             borderColor={useColorModeValue("gray.700", "gray.900")}
             disabled={!subscription && count >= 5}
+            value={price}
+            onChange={(e) => setPrice(e.target.value)}
           />
 
           <Button
@@ -132,6 +160,7 @@ export default function newProcedure() {
             bg="button.cta"
             _hover={{ bg: "#ffb13e" }}
             disabled={!subscription && count >= 5}
+            onClick={handleRegister}
           >
             Cadastrar
           </Button>
