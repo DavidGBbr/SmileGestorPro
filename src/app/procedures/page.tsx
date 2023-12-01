@@ -1,5 +1,6 @@
 "use client";
 import { Sidebar } from "@/components/sidebar";
+import { setupAPIClient } from "@/services/api";
 import {
   Button,
   Flex,
@@ -10,14 +11,40 @@ import {
   useMediaQuery,
 } from "@chakra-ui/react";
 import Link from "next/link";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { IoMdPricetag } from "react-icons/io";
 
+interface ProceduresItem {
+  id: string;
+  name: string;
+  price: number | string;
+  status: boolean;
+  user_id: string;
+}
+
 const procedures = () => {
+  const [procedures, setProcedures] = useState<ProceduresItem[]>();
   const [isMobile] = useMediaQuery("(max-width: 500px)");
 
   useEffect(() => {
     document.title = "Procedimentos - Minha Clínica";
+  }, []);
+
+  useEffect(() => {
+    const getProcedures = async () => {
+      const apiClient = setupAPIClient();
+      const response = await apiClient.get("/procedures", {
+        params: {
+          status: true,
+        },
+      });
+      setProcedures(response.data);
+    };
+    try {
+      getProcedures();
+    } catch (error) {
+      console.log(error);
+    }
   }, []);
 
   return (
@@ -63,30 +90,33 @@ const procedures = () => {
           </Stack>
         </Flex>
       </Flex>
-      <Link href="procedures/123">
-        <Flex
-          cursor="pointer"
-          w="100%"
-          p={4}
-          bg="clinic.400"
-          direction="row"
-          rounded="4"
-          mb={2}
-          justifyContent="space-between"
-          alignItems="center"
-        >
-          <Flex direction="row" alignItems="center" justifyContent="center">
-            <IoMdPricetag size={28} color="#fba931" />
-            <Text color="#fff" ml={4} noOfLines={2} fontWeight="bold">
-              Clareamento Dental
+
+      {procedures?.map((procedure) => (
+        <Link key={procedure.id} href={`procedures/${procedure.id}`}>
+          <Flex
+            cursor="pointer"
+            w="100%"
+            p={4}
+            bg="clinic.400"
+            direction="row"
+            rounded="4"
+            mb={2}
+            justifyContent="space-between"
+            alignItems="center"
+          >
+            <Flex direction="row" alignItems="center" justifyContent="center">
+              <IoMdPricetag size={28} color="#fba931" />
+              <Text color="#fff" ml={4} noOfLines={2} fontWeight="bold">
+                {procedure.name}
+              </Text>
+            </Flex>
+
+            <Text color="#fff" fontWeight="bold">
+              Preço: R$ {procedure.price}
             </Text>
           </Flex>
-
-          <Text color="#fff" fontWeight="bold">
-            Preço: R$ 400.90
-          </Text>
-        </Flex>
-      </Link>
+        </Link>
+      ))}
     </Sidebar>
   );
 };
