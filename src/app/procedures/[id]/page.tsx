@@ -12,14 +12,62 @@ import {
   useMediaQuery,
 } from "@chakra-ui/react";
 import { FiChevronLeft } from "react-icons/fi";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import { setupAPIClient } from "@/services/api";
 
-export default function EditProcedure() {
+interface ProcedureType {
+  id: string;
+  name: string;
+  price: number;
+  status: true;
+  user_id: string;
+}
+
+interface SubscriptionType {
+  id: string;
+  status: string;
+}
+
+export default function EditProcedure({ params }: { params: { id: string } }) {
+  const [procedure, setProcedure] = useState<ProcedureType[]>();
+  const [subscription, setSubscription] = useState<SubscriptionType | null>();
   const [isMobile] = useMediaQuery("(max-width: 500px)");
+
   useEffect(() => {
     document.title = "Editando procedimento";
   }, []);
+
+  useEffect(() => {
+    const getDetailProcedure = async () => {
+      const apiClient = setupAPIClient();
+      const response = await apiClient("procedure/detail", {
+        params: {
+          procedure_id: params.id,
+        },
+      });
+      setProcedure(response.data);
+    };
+    try {
+      getDetailProcedure();
+    } catch (error) {
+      console.log(error);
+    }
+  }, []);
+
+  useEffect(() => {
+    const getSubscription = async () => {
+      const apiClient = setupAPIClient();
+      const response = await apiClient("procedure/check");
+      setSubscription(response.data.subscriptions);
+    };
+    try {
+      getSubscription();
+    } catch (error) {
+      console.log(error);
+    }
+  }, []);
+
   return (
     <>
       <Sidebar>
@@ -102,9 +150,27 @@ export default function EditProcedure() {
               bg="button.cta"
               color="gray.900"
               _hover={{ bg: "#ffb13e" }}
+              disabled={subscription?.status !== "active"}
             >
               Salvar
             </Button>
+            {subscription?.status !== "active" ? (
+              <Flex direction="row" align="center" justify="center" pb={3}>
+                <Link href="/planos">
+                  <Text
+                    cursor="pointer"
+                    fontWeight="bold"
+                    mr={1}
+                    color="#31fb6a"
+                  >
+                    Seja premium
+                  </Text>
+                </Link>
+                <Text color="#fff">tenha todos acessos liberados.</Text>
+              </Flex>
+            ) : (
+              <></>
+            )}
           </Flex>
         </Flex>
       </Sidebar>
