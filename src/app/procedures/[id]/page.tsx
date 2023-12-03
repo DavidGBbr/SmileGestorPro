@@ -12,14 +12,14 @@ import {
   useMediaQuery,
 } from "@chakra-ui/react";
 import { FiChevronLeft } from "react-icons/fi";
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import Link from "next/link";
 import { setupAPIClient } from "@/services/api";
 
 interface ProcedureType {
   id: string;
   name: string;
-  price: number;
+  price: string | number;
   status: true;
   user_id: string;
 }
@@ -30,8 +30,13 @@ interface SubscriptionType {
 }
 
 export default function EditProcedure({ params }: { params: { id: string } }) {
-  const [procedure, setProcedure] = useState<ProcedureType[]>();
+  const [procedure, setProcedure] = useState<ProcedureType>();
   const [subscription, setSubscription] = useState<SubscriptionType | null>();
+  const [name, setName] = useState(procedure?.name);
+  const [price, setPrice] = useState(procedure?.price);
+  const [status, setStatus] = useState(
+    procedure?.status ? "disabled" : "enabled"
+  );
   const [isMobile] = useMediaQuery("(max-width: 500px)");
 
   useEffect(() => {
@@ -67,6 +72,39 @@ export default function EditProcedure({ params }: { params: { id: string } }) {
       console.log(error);
     }
   }, []);
+
+  useEffect(() => {
+    setName(procedure?.name);
+    setPrice(procedure?.price);
+    setStatus(procedure?.status ? "disabled" : "enabled");
+  }, [procedure]);
+
+  const handleChangeStatus = ({ target }: ChangeEvent<HTMLInputElement>) => {
+    if (target.value === "disabled") {
+      setStatus("enabled");
+    } else {
+      setStatus("disabled");
+    }
+  };
+
+  const handleUpdate = async () => {
+    if (name === "" || price === "") {
+      return;
+    }
+
+    try {
+      const apiClient = setupAPIClient();
+      await apiClient.put("/procedure", {
+        name: name,
+        price: Number(price),
+        status: status === "disabled" ? true : false,
+        procedure_id: procedure?.id,
+      });
+      alert("Procedimento atualizado com sucesso!");
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <>
@@ -126,6 +164,9 @@ export default function EditProcedure({ params }: { params: { id: string } }) {
               type="text"
               w="100%"
               borderColor={useColorModeValue("gray.700", "gray.900")}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              color="#fff"
             />
             <Input
               placeholder="Valor do seu procedimento"
@@ -135,13 +176,22 @@ export default function EditProcedure({ params }: { params: { id: string } }) {
               type="number"
               w="100%"
               borderColor={useColorModeValue("gray.700", "gray.900")}
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
+              color="#fff"
             />
 
             <Stack mb={6} align="center" direction="row">
               <Text fontWeight="bold" color="#fff">
                 Desativar procedimento
               </Text>
-              <Switch size="lg" colorScheme="red" />
+              <Switch
+                size="lg"
+                colorScheme="red"
+                value={status}
+                isChecked={status === "disabled" ? false : true}
+                onChange={(e) => handleChangeStatus(e)}
+              />
             </Stack>
 
             <Button
@@ -151,6 +201,7 @@ export default function EditProcedure({ params }: { params: { id: string } }) {
               color="gray.900"
               _hover={{ bg: "#ffb13e" }}
               disabled={subscription?.status !== "active"}
+              onClick={handleUpdate}
             >
               Salvar
             </Button>
