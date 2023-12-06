@@ -1,11 +1,29 @@
 "use client";
 import { Sidebar } from "@/components/sidebar";
+import { setupAPIClient } from "@/services/api";
 import { Button, Flex, Heading, Text, useMediaQuery } from "@chakra-ui/react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export default function Planos() {
+  const [isPremium, setIsPremium] = useState(false);
+
   useEffect(() => {
     document.title = "Gerencie sua assinatura";
+  }, []);
+
+  useEffect(() => {
+    const getSubscription = async () => {
+      const apiClient = setupAPIClient();
+      const response = await apiClient.get("/me");
+      setIsPremium(
+        response.data.user?.subscriptions?.status === "active" ? true : false
+      );
+    };
+    try {
+      getSubscription();
+    } catch (error) {
+      console.log(error);
+    }
   }, []);
 
   const [isMobile] = useMediaQuery("(max-width: 500px)");
@@ -103,14 +121,25 @@ export default function Planos() {
               R$ 9.99
             </Text>
             <Button
-              bg="button.cta"
-              _hover={{ bg: "#ffbd3e" }}
+              bg={isPremium ? "#fff" : "button.cta"}
               m={2}
-              color="#fff"
+              color={isPremium ? "clinic.900" : "#fff"}
               onClick={() => {}}
+              disabled={isPremium}
             >
-              VIRAR PREMIUM
+              {isPremium ? "VOCÊ JÁ É PREMIUM" : "VIRAR PREMIUM"}
             </Button>
+            {isPremium && (
+              <Button
+                m={2}
+                bg="#fff"
+                color="clinic.900"
+                fontWeight="bold"
+                onClick={() => {}}
+              >
+                ALTERAR ASSINATURA
+              </Button>
+            )}
           </Flex>
         </Flex>
       </Flex>
