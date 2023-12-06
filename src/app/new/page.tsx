@@ -53,6 +53,11 @@ export default function New() {
   };
 
   const handleRegister = async () => {
+    if (customer === "") {
+      alert("Preencha o nome do cliente");
+      return;
+    }
+
     try {
       const apiClient = setupAPIClient();
       const response = await apiClient.post("/schedule", {
