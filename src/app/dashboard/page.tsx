@@ -8,12 +8,14 @@ import {
   Heading,
   Link as ChakraLink,
   useMediaQuery,
+  useDisclosure,
 } from "@chakra-ui/react";
 import Link from "next/link";
 import { IoMdPerson } from "react-icons/io";
 import { setupAPIClient } from "@/services/api";
+import { ModalInfo } from "@/components/modal";
 
-interface ScheduleProps {
+export interface ScheduleProps {
   id: string;
   customer: string;
   procedure: {
@@ -27,6 +29,8 @@ interface ScheduleProps {
 
 const Dashboard = () => {
   const [schedule, setSchedule] = useState<ScheduleProps[]>([]);
+  const [service, setService] = useState<ScheduleProps>();
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   useEffect(() => {
     document.title = "SmileGestor - Minha agenda";
@@ -60,90 +64,125 @@ const Dashboard = () => {
 
   const [isMobile] = useMediaQuery("(max-width: 500px)");
 
-  return (
-    <Sidebar>
-      <Flex direction="column" align="flex-start" justify="flex-start">
-        <Flex w="100%" direction="row" align="center" justify="flex-start">
-          <Heading fontSize="3xl" mt={4} mb={4} mr={4} color="#fff">
-            Agenda
-          </Heading>
-          <Link href="/new">
-            <Button bg="clinic.400" color="#fff" _hover={{ bg: "#2d375f" }}>
-              Registrar
-            </Button>
-          </Link>
-        </Flex>
+  const handleOpenModal = (item: ScheduleProps) => {
+    setService(item);
+    onOpen();
+  };
 
-        {schedule?.map((item) => (
-          <ChakraLink
-            key={item?.id}
-            w="100%"
-            m={0}
-            p={0}
-            mt={1}
-            bg="transparent"
-            style={{ textDecoration: "none" }}
-            color="#fff"
-          >
-            <Flex
+  const handleFinish = async (id: string) => {
+    try {
+      const apiClient = setupAPIClient();
+      await apiClient.delete("/schedule", {
+        params: {
+          schedule_id: id,
+        },
+      });
+
+      const filterSchedule = schedule.filter((item) => item.id !== id);
+
+      setSchedule(filterSchedule);
+    } catch (error) {
+      console.log(error);
+      alert("Erro ao finalizar este serviço");
+    } finally {
+      onClose();
+    }
+  };
+
+  return (
+    <>
+      <Sidebar>
+        <Flex direction="column" align="flex-start" justify="flex-start">
+          <Flex w="100%" direction="row" align="center" justify="flex-start">
+            <Heading fontSize="3xl" mt={4} mb={4} mr={4} color="#fff">
+              Agenda
+            </Heading>
+            <Link href="/new">
+              <Button bg="clinic.400" color="#fff" _hover={{ bg: "#2d375f" }}>
+                Registrar
+              </Button>
+            </Link>
+          </Flex>
+
+          {schedule?.map((item) => (
+            <ChakraLink
+              key={item?.id}
+              onClick={() => handleOpenModal(item)}
               w="100%"
-              direction={isMobile ? "column" : "row"}
-              p={4}
-              rounded={4}
-              mb={2}
-              bg="clinic.400"
-              justify="space-between"
-              align={isMobile ? "flex-start" : "center"}
+              m={0}
+              p={0}
+              mt={1}
+              bg="transparent"
+              style={{ textDecoration: "none" }}
+              color="#fff"
             >
               <Flex
-                direction="row"
-                mb={isMobile ? 2 : 0}
-                align="center"
-                justify="center"
+                w="100%"
+                direction={isMobile ? "column" : "row"}
+                p={4}
+                rounded={4}
+                mb={2}
+                bg="clinic.400"
+                justify="space-between"
+                align={isMobile ? "flex-start" : "center"}
               >
-                <IoMdPerson size={28} color="orange" />
-                <Text fontWeight="bold" ml={4} noOfLines={1}>
-                  {item?.customer}
-                </Text>
-              </Flex>
+                <Flex
+                  direction="row"
+                  mb={isMobile ? 2 : 0}
+                  align="center"
+                  justify="center"
+                >
+                  <IoMdPerson size={28} color="orange" />
+                  <Text fontWeight="bold" ml={4} noOfLines={1}>
+                    {item?.customer}
+                  </Text>
+                </Flex>
 
-              <Flex
-                direction="row"
-                mb={isMobile ? 2 : 0}
-                align="center"
-                justify="center"
-              >
-                <Text fontWeight="bold" ml={4} noOfLines={1}>
-                  {item?.procedure?.name}
-                </Text>
-              </Flex>
+                <Flex
+                  direction="row"
+                  mb={isMobile ? 2 : 0}
+                  align="center"
+                  justify="center"
+                >
+                  <Text fontWeight="bold" ml={4} noOfLines={1}>
+                    {item?.procedure?.name}
+                  </Text>
+                </Flex>
 
-              <Flex
-                direction="row"
-                mb={isMobile ? 2 : 0}
-                align="center"
-                justify="center"
-              >
-                <Text fontWeight="bold" ml={4} noOfLines={1}>
-                  {formatDate(item?.date)}
-                </Text>
-              </Flex>
+                <Flex
+                  direction="row"
+                  mb={isMobile ? 2 : 0}
+                  align="center"
+                  justify="center"
+                >
+                  <Text fontWeight="bold" ml={4} noOfLines={1}>
+                    {formatDate(item?.date)}
+                  </Text>
+                </Flex>
 
-              <Flex
-                direction="row"
-                mb={isMobile ? 2 : 0}
-                align="center"
-                justify="center"
-              >
-                <Text fontWeight="bold" ml={4} noOfLines={1}>
-                  R$ {item?.procedure?.price}
-                </Text>
+                <Flex
+                  direction="row"
+                  mb={isMobile ? 2 : 0}
+                  align="center"
+                  justify="center"
+                >
+                  <Text fontWeight="bold" ml={4} noOfLines={1}>
+                    R$ {item?.procedure?.price}
+                  </Text>
+                </Flex>
               </Flex>
-            </Flex>
-          </ChakraLink>
-        ))}
-      </Flex>
-    </Sidebar>
+            </ChakraLink>
+          ))}
+        </Flex>
+      </Sidebar>
+      <ModalInfo
+        isOpen={isOpen}
+        onOpen={onOpen}
+        onClose={onClose}
+        data={service}
+        finishService={() => handleFinish(service?.id)}
+      />
+    </>
   );
 };
 
