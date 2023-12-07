@@ -9,6 +9,8 @@ export async function middleware(req: NextRequest) {
     dashboardURL: new URL("/dashboard", req.url),
     proceduresURL: new URL("/procedures", req.url),
     profileURL: new URL("/profile", req.url),
+    plansURL: new URL("/planos", req.url),
+    newURL: new URL("/new", req.url),
   };
 
   if (token) {
@@ -22,7 +24,9 @@ export async function middleware(req: NextRequest) {
     if (
       req.nextUrl.pathname.startsWith("/dashboard") ||
       req.nextUrl.pathname.startsWith("/procedures") ||
-      req.nextUrl.pathname.startsWith("/profile")
+      req.nextUrl.pathname.startsWith("/profile") ||
+      req.nextUrl.pathname.startsWith("/planos") ||
+      req.nextUrl.pathname.startsWith("/new")
     ) {
       return NextResponse.redirect(routes.signInURL);
     }
@@ -38,6 +42,8 @@ export const config = {
     "/procedures/:path*",
     "/profile",
     "/profile/:path*",
+    "/planos",
+    "/new",
     "/login",
     "/register",
   ],

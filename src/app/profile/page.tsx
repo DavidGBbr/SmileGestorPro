@@ -12,7 +12,7 @@ import {
 import { Sidebar } from "@/components/sidebar";
 import Link from "next/link";
 import { AuthContext } from "@/context/AuthContext";
-import { api } from "@/services/apiClient";
+import { setupAPIClient } from "@/services/api";
 
 interface ProfileProps {
   id: string;
@@ -34,7 +34,8 @@ export default function profile() {
 
   useEffect(() => {
     const handleData = async () => {
-      const response = await api.get("/me");
+      const apiClient = setupAPIClient();
+      const response = await apiClient.get("/me");
       setProfile({
         id: response.data.user.id,
         name: response.data.user.name,
@@ -65,7 +66,8 @@ export default function profile() {
       return;
     }
     const updateUser = async () => {
-      await api.put("/users", {
+      const apiClient = setupAPIClient();
+      await apiClient.put("/users", {
         name: name,
         address: address,
       });

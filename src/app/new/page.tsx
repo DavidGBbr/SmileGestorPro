@@ -15,9 +15,8 @@ interface ProcedureProps {
 export default function New() {
   const [customer, setCustomer] = useState("");
   const [procedures, setProcedures] = useState<ProcedureProps[]>([]);
-  const [procedureSelected, setProcedureSelected] = useState(
-    procedures.length && procedures[0]
-  );
+  const [procedureSelected, setProcedureSelected] =
+    useState<ProcedureProps | null>();
   const [datetime, setDatetime] = useState("");
 
   useEffect(() => {
@@ -47,6 +46,12 @@ export default function New() {
     }
   }, []);
 
+  useEffect(() => {
+    if (procedures.length) {
+      setProcedureSelected(procedures[0]);
+    }
+  }, [procedures]);
+
   const handleChangeSelect = (id: string) => {
     const procedureItem = procedures.find((procedure) => procedure.id === id);
     setProcedureSelected(procedureItem);
@@ -58,9 +63,13 @@ export default function New() {
       return;
     }
 
+    if (!procedureSelected || !datetime) {
+      return;
+    }
+
     try {
       const apiClient = setupAPIClient();
-      const response = await apiClient.post("/schedule", {
+      await apiClient.post("/schedule", {
         customer: customer,
         procedure_id: procedureSelected.id,
         date: `${datetime}:00.000Z`,
@@ -69,6 +78,7 @@ export default function New() {
       window.location.href = "/dashboard";
     } catch (error) {
       alert("Erro ao registrar");
+      console.error("Erro ao agendar: " + error);
     }
   };
 
@@ -112,8 +122,7 @@ export default function New() {
             color="#fff"
             css={`
               ::-webkit-calendar-picker-indicator {
-                background: url(https://cdn.iconfinder.com/stored_data/1408367/128/png?token=1701810871-jf2rXNjneaXxHYDTFpY44AOMoUEUrhvcRCYA50e1lJg%3D)
-                  center/80% no-repeat;
+                background: url(/images/calendar.svg) center/80% no-repeat;
               }
             `}
             value={datetime}

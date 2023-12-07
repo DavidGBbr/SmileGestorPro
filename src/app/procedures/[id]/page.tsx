@@ -101,6 +101,7 @@ export default function EditProcedure({ params }: { params: { id: string } }) {
         procedure_id: procedure?.id,
       });
       alert("Procedimento atualizado com sucesso!");
+      window.location.href = "/procedures";
     } catch (error) {
       console.log(error);
     }

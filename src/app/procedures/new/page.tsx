@@ -12,7 +12,6 @@ import {
 } from "@chakra-ui/react";
 import Link from "next/link";
 import { FiChevronLeft } from "react-icons/fi";
-import { api } from "@/services/apiClient";
 import { setupAPIClient } from "@/services/api";
 
 export default function newProcedure() {
@@ -28,7 +27,8 @@ export default function newProcedure() {
 
   useEffect(() => {
     const getSubscription = async () => {
-      const response = await api.get("/procedure/check");
+      const apiClient = setupAPIClient();
+      const response = await apiClient.get("/procedure/check");
       setSubscription(
         response.data?.subscriptions?.status === "active" ? true : false
       );
@@ -42,7 +42,8 @@ export default function newProcedure() {
 
   useEffect(() => {
     const getProceduresAmount = async () => {
-      const response = await api.get("/procedure/count");
+      const apiClient = setupAPIClient();
+      const response = await apiClient.get("/procedure/count");
       setCount(Number(response.data.count));
     };
     try {
