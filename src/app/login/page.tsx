@@ -11,9 +11,23 @@ const Login = () => {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
   async function handleLogin() {
-    await signIn({ email, password });
+    if (email === "" || password === "") {
+      return;
+    }
+
+    try {
+      setLoading(true);
+      await signIn({ email, password });
+      setEmail("");
+      setPassword("");
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   }
 
   useEffect(() => {
@@ -72,6 +86,7 @@ const Login = () => {
             size="lg"
             _hover={{ bg: "#ffb13e" }}
             onClick={handleLogin}
+            isLoading={loading}
           >
             Acessar
           </Button>

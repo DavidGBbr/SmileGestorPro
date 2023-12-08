@@ -7,7 +7,7 @@ import { api } from "../services/apiClient";
 interface AuthContextData {
   user: UserProps;
   isAuthenticated: boolean;
-  signIn: (credentials: SignInProps) => Promise<void>;
+  signIn: (credentials: SignInProps) => Promise<boolean>;
   signUp: (credentials: SignUpProps) => Promise<boolean>;
   logoutUser: () => Promise<void>;
 }
@@ -77,32 +77,40 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, []);
 
   async function signIn({ email, password }: SignInProps) {
-    try {
-      const response = await api.post("/session", {
-        email,
-        password,
-      });
+    setLoading(true);
 
-      const { id, name, address, token, subscriptions } = response.data;
+    return new Promise<boolean>(async (resolve, reject) => {
+      try {
+        const response = await api.post("/session", {
+          email,
+          password,
+        });
 
-      setCookie(undefined, "@clinic.token", token, {
-        maxAge: 60 * 60 * 24 * 30,
-        path: "/",
-      });
+        const { id, name, address, token, subscriptions } = response.data;
 
-      setUser({
-        id,
-        name,
-        email,
-        address,
-        subscriptions,
-      });
+        setCookie(undefined, "@clinic.token", token, {
+          maxAge: 60 * 60 * 24 * 30,
+          path: "/",
+        });
 
-      api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-      window.location.href = "/dashboard";
-    } catch (error) {
-      console.log("Erro ao fazer login: ", error);
-    }
+        setUser({
+          id,
+          name,
+          email,
+          address,
+          subscriptions,
+        });
+
+        api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+        window.location.href = "/dashboard";
+        resolve(true);
+      } catch (error) {
+        console.log("Erro ao fazer login: ", error);
+        reject(false);
+      } finally {
+        setLoading(false);
+      }
+    });
   }
 
   async function signUp({ name, email, password }: SignUpProps) {
