@@ -12,13 +12,24 @@ const Register = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
   async function handleRegister() {
     if (name === "" || email === "" || password === "") {
       return;
     }
 
-    await signUp({ name, email, password });
+    try {
+      setLoading(true);
+      await signUp({ name, email, password });
+      setName("");
+      setEmail("");
+      setPassword("");
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   }
 
   useEffect(() => {
@@ -89,6 +100,7 @@ const Register = () => {
             size="lg"
             _hover={{ bg: "#ffb13e" }}
             onClick={handleRegister}
+            isLoading={loading}
           >
             Cadastrar
           </Button>

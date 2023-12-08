@@ -8,7 +8,7 @@ interface AuthContextData {
   user: UserProps;
   isAuthenticated: boolean;
   signIn: (credentials: SignInProps) => Promise<void>;
-  signUp: (credentials: SignUpProps) => Promise<void>;
+  signUp: (credentials: SignUpProps) => Promise<boolean>;
   logoutUser: () => Promise<void>;
 }
 
@@ -54,6 +54,7 @@ export const signOut = () => {
 
 export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<UserProps>();
+  const [loading, setLoading] = useState(false);
   const isAuthenticated = !!user;
 
   useEffect(() => {
@@ -105,17 +106,25 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }
 
   async function signUp({ name, email, password }: SignUpProps) {
-    try {
-      const response = await api.post("/users", {
-        name,
-        email,
-        password,
-      });
+    setLoading(true);
 
-      window.location.href = "/login";
-    } catch (error) {
-      console.log(error);
-    }
+    return new Promise<boolean>(async (resolve, reject) => {
+      try {
+        const response = await api.post("/users", {
+          name,
+          email,
+          password,
+        });
+
+        window.location.href = "/login";
+        resolve(true);
+      } catch (error) {
+        console.error(error);
+        reject(false);
+      } finally {
+        setLoading(false);
+      }
+    });
   }
 
   async function logoutUser() {
