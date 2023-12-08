@@ -19,6 +19,7 @@ export default function newProcedure() {
   const [count, setCount] = useState(0);
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
+  const [loading, setLoading] = useState(false);
   const [isMobile] = useMediaQuery("(max-width: 500px)");
 
   useEffect(() => {
@@ -59,16 +60,22 @@ export default function newProcedure() {
     }
 
     try {
+      setLoading(true);
       const apiClient = setupAPIClient();
       await apiClient.post("/procedure", {
         name: name,
-        price: Number(price),
+        price: Number(price.replace(",", ".")),
       });
+
+      setName("");
+      setPrice("");
 
       window.location.href = "/procedures";
     } catch (error) {
       console.log(error);
       alert("Erro ao cadastrar.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -162,6 +169,9 @@ export default function newProcedure() {
             _hover={{ bg: "#ffb13e" }}
             isDisabled={!subscription && count >= 5}
             onClick={handleRegister}
+            loadingText="Cadastrando"
+            spinnerPlacement="end"
+            isLoading={loading}
           >
             Cadastrar
           </Button>
