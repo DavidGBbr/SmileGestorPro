@@ -201,7 +201,7 @@ export default function EditProcedure({ params }: { params: { id: string } }) {
               bg="button.cta"
               color="gray.900"
               _hover={{ bg: "#ffb13e" }}
-              disabled={subscription?.status !== "active"}
+              isDisabled={subscription?.status !== "active"}
               onClick={handleUpdate}
             >
               Salvar

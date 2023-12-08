@@ -134,7 +134,7 @@ export default function newProcedure() {
             color="#fff"
             mb={3}
             borderColor={useColorModeValue("gray.700", "gray.900")}
-            disabled={!subscription && count >= 5}
+            isDisabled={!subscription && count >= 5}
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
@@ -148,7 +148,7 @@ export default function newProcedure() {
             color="#fff"
             mb={4}
             borderColor={useColorModeValue("gray.700", "gray.900")}
-            disabled={!subscription && count >= 5}
+            isDisabled={!subscription && count >= 5}
             value={price}
             onChange={(e) => setPrice(e.target.value)}
           />
@@ -160,7 +160,7 @@ export default function newProcedure() {
             mb={6}
             bg="button.cta"
             _hover={{ bg: "#ffb13e" }}
-            disabled={!subscription && count >= 5}
+            isDisabled={!subscription && count >= 5}
             onClick={handleRegister}
           >
             Cadastrar

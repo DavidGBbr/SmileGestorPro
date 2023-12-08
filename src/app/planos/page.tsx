@@ -125,7 +125,7 @@ export default function Planos() {
               m={2}
               color={isPremium ? "clinic.900" : "#fff"}
               onClick={() => {}}
-              disabled={isPremium}
+              isDisabled={isPremium}
             >
               {isPremium ? "VOCÊ JÁ É PREMIUM" : "VIRAR PREMIUM"}
             </Button>
