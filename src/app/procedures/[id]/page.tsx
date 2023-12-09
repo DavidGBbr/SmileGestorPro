@@ -37,6 +37,7 @@ export default function EditProcedure({ params }: { params: { id: string } }) {
   const [status, setStatus] = useState(
     procedure?.status ? "disabled" : "enabled"
   );
+  const [loading, setLoading] = useState(false);
   const [isMobile] = useMediaQuery("(max-width: 500px)");
 
   useEffect(() => {
@@ -93,6 +94,7 @@ export default function EditProcedure({ params }: { params: { id: string } }) {
     }
 
     try {
+      setLoading(true);
       const apiClient = setupAPIClient();
       await apiClient.put("/procedure", {
         name: name,
@@ -104,6 +106,8 @@ export default function EditProcedure({ params }: { params: { id: string } }) {
       window.location.href = "/procedures";
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -203,6 +207,9 @@ export default function EditProcedure({ params }: { params: { id: string } }) {
               _hover={{ bg: "#ffb13e" }}
               isDisabled={subscription?.status !== "active"}
               onClick={handleUpdate}
+              loadingText="Salvando"
+              spinnerPlacement="end"
+              isLoading={loading}
             >
               Salvar
             </Button>

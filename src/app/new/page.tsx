@@ -18,6 +18,7 @@ export default function New() {
   const [procedureSelected, setProcedureSelected] =
     useState<ProcedureProps | null>();
   const [datetime, setDatetime] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     document.title = "Novo agendamento";
@@ -68,6 +69,7 @@ export default function New() {
     }
 
     try {
+      setLoading(true);
       const apiClient = setupAPIClient();
       await apiClient.post("/schedule", {
         customer: customer,
@@ -79,6 +81,8 @@ export default function New() {
     } catch (error) {
       alert("Erro ao registrar");
       console.error("Erro ao agendar: " + error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -154,6 +158,9 @@ export default function New() {
             bg="button.cta"
             _hover={{ bg: "#ffb13e" }}
             onClick={handleRegister}
+            loadingText="Cadastrando"
+            spinnerPlacement="end"
+            isLoading={loading}
           >
             Cadastrar
           </Button>

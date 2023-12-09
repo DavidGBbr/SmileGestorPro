@@ -13,6 +13,7 @@ import {
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { IoMdPricetag } from "react-icons/io";
+import { Spinner } from "@chakra-ui/react";
 
 interface ProceduresItem {
   id: string;
@@ -123,32 +124,50 @@ const procedures = () => {
         </Flex>
       </Flex>
 
-      {procedures?.map((procedure) => (
-        <Link key={procedure.id} href={`procedures/${procedure.id}`}>
-          <Flex
-            cursor="pointer"
-            w="100%"
-            p={4}
-            bg="clinic.400"
-            direction="row"
-            rounded="4"
-            mb={2}
-            justifyContent="space-between"
-            alignItems="center"
-          >
-            <Flex direction="row" alignItems="center" justifyContent="center">
-              <IoMdPricetag size={28} color="#fba931" />
-              <Text color="#fff" ml={4} noOfLines={2} fontWeight="bold">
-                {procedure.name}
-              </Text>
-            </Flex>
+      {!procedures?.length ? (
+        <Flex align="center" justify="center" w="100%" mt={20}>
+          <Spinner
+            color="gray.900"
+            thickness="4px"
+            speed="0.65s"
+            emptyColor="gray.200"
+            size="xl"
+          />
+        </Flex>
+      ) : (
+        <>
+          {procedures?.map((procedure) => (
+            <Link key={procedure.id} href={`procedures/${procedure.id}`}>
+              <Flex
+                cursor="pointer"
+                w="100%"
+                p={4}
+                bg="clinic.400"
+                direction="row"
+                rounded="4"
+                mb={2}
+                justifyContent="space-between"
+                alignItems="center"
+              >
+                <Flex
+                  direction="row"
+                  alignItems="center"
+                  justifyContent="center"
+                >
+                  <IoMdPricetag size={28} color="#fba931" />
+                  <Text color="#fff" ml={4} noOfLines={2} fontWeight="bold">
+                    {procedure.name}
+                  </Text>
+                </Flex>
 
-            <Text color="#fff" fontWeight="bold">
-              Preço: R$ {procedure.price}
-            </Text>
-          </Flex>
-        </Link>
-      ))}
+                <Text color="#fff" fontWeight="bold">
+                  Preço: R$ {procedure.price}
+                </Text>
+              </Flex>
+            </Link>
+          ))}
+        </>
+      )}
     </Sidebar>
   );
 };

@@ -14,6 +14,7 @@ import Link from "next/link";
 import { IoMdPerson } from "react-icons/io";
 import { setupAPIClient } from "@/services/api";
 import { ModalInfo } from "@/components/modal";
+import { Spinner } from "@chakra-ui/react";
 
 export interface ScheduleProps {
   id: string;
@@ -104,75 +105,89 @@ const Dashboard = () => {
             </Link>
           </Flex>
 
-          {schedule?.map((item) => (
-            <ChakraLink
-              key={item?.id}
-              onClick={() => handleOpenModal(item)}
-              w="100%"
-              m={0}
-              p={0}
-              mt={1}
-              bg="transparent"
-              style={{ textDecoration: "none" }}
-              color="#fff"
-            >
-              <Flex
-                w="100%"
-                direction={isMobile ? "column" : "row"}
-                p={4}
-                rounded={4}
-                mb={2}
-                bg="clinic.400"
-                justify="space-between"
-                align={isMobile ? "flex-start" : "center"}
-              >
-                <Flex
-                  direction="row"
-                  mb={isMobile ? 2 : 0}
-                  align="center"
-                  justify="center"
+          {!schedule.length ? (
+            <Flex align="center" justify="center" w="100%" mt={20}>
+              <Spinner
+                color="gray.900"
+                thickness="4px"
+                speed="0.65s"
+                emptyColor="gray.200"
+                size="xl"
+              />
+            </Flex>
+          ) : (
+            <>
+              {schedule?.map((item) => (
+                <ChakraLink
+                  key={item?.id}
+                  onClick={() => handleOpenModal(item)}
+                  w="100%"
+                  m={0}
+                  p={0}
+                  mt={1}
+                  bg="transparent"
+                  style={{ textDecoration: "none" }}
+                  color="#fff"
                 >
-                  <IoMdPerson size={28} color="orange" />
-                  <Text fontWeight="bold" ml={4} noOfLines={1}>
-                    {item?.customer}
-                  </Text>
-                </Flex>
+                  <Flex
+                    w="100%"
+                    direction={isMobile ? "column" : "row"}
+                    p={4}
+                    rounded={4}
+                    mb={2}
+                    bg="clinic.400"
+                    justify="space-between"
+                    align={isMobile ? "flex-start" : "center"}
+                  >
+                    <Flex
+                      direction="row"
+                      mb={isMobile ? 2 : 0}
+                      align="center"
+                      justify="center"
+                    >
+                      <IoMdPerson size={28} color="orange" />
+                      <Text fontWeight="bold" ml={4} noOfLines={1}>
+                        {item?.customer}
+                      </Text>
+                    </Flex>
 
-                <Flex
-                  direction="row"
-                  mb={isMobile ? 2 : 0}
-                  align="center"
-                  justify="center"
-                >
-                  <Text fontWeight="bold" ml={4} noOfLines={1}>
-                    {item?.procedure?.name}
-                  </Text>
-                </Flex>
+                    <Flex
+                      direction="row"
+                      mb={isMobile ? 2 : 0}
+                      align="center"
+                      justify="center"
+                    >
+                      <Text fontWeight="bold" ml={4} noOfLines={1}>
+                        {item?.procedure?.name}
+                      </Text>
+                    </Flex>
 
-                <Flex
-                  direction="row"
-                  mb={isMobile ? 2 : 0}
-                  align="center"
-                  justify="center"
-                >
-                  <Text fontWeight="bold" ml={4} noOfLines={1}>
-                    {formatDate(item?.date)}
-                  </Text>
-                </Flex>
+                    <Flex
+                      direction="row"
+                      mb={isMobile ? 2 : 0}
+                      align="center"
+                      justify="center"
+                    >
+                      <Text fontWeight="bold" ml={4} noOfLines={1}>
+                        {formatDate(item?.date)}
+                      </Text>
+                    </Flex>
 
-                <Flex
-                  direction="row"
-                  mb={isMobile ? 2 : 0}
-                  align="center"
-                  justify="center"
-                >
-                  <Text fontWeight="bold" ml={4} noOfLines={1}>
-                    R$ {item?.procedure?.price}
-                  </Text>
-                </Flex>
-              </Flex>
-            </ChakraLink>
-          ))}
+                    <Flex
+                      direction="row"
+                      mb={isMobile ? 2 : 0}
+                      align="center"
+                      justify="center"
+                    >
+                      <Text fontWeight="bold" ml={4} noOfLines={1}>
+                        R$ {item?.procedure?.price}
+                      </Text>
+                    </Flex>
+                  </Flex>
+                </ChakraLink>
+              ))}
+            </>
+          )}
         </Flex>
       </Sidebar>
       <ModalInfo
