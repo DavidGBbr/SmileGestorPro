@@ -25,7 +25,6 @@ const Login = () => {
       setPassword("");
     } catch (error) {
       console.error(error);
-    } finally {
       setLoading(false);
     }
   }

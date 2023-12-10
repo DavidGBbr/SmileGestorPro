@@ -26,6 +26,7 @@ interface ProceduresItem {
 const procedures = () => {
   const [procedures, setProcedures] = useState<ProceduresItem[]>();
   const [disableProcedure, setDisableProcedure] = useState("enabled");
+  const [loading, setLoading] = useState(true);
   const [isMobile] = useMediaQuery("(max-width: 500px)");
 
   useEffect(() => {
@@ -34,19 +35,21 @@ const procedures = () => {
 
   useEffect(() => {
     const getProcedures = async () => {
-      const apiClient = setupAPIClient();
-      const response = await apiClient.get("/procedures", {
-        params: {
-          status: true,
-        },
-      });
-      setProcedures(response.data);
+      try {
+        const apiClient = setupAPIClient();
+        const response = await apiClient.get("/procedures", {
+          params: {
+            status: true,
+          },
+        });
+        setProcedures(response.data);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
     };
-    try {
-      getProcedures();
-    } catch (error) {
-      console.log(error);
-    }
+    getProcedures();
   }, []);
 
   useEffect(() => {
@@ -124,7 +127,7 @@ const procedures = () => {
         </Flex>
       </Flex>
 
-      {!procedures?.length ? (
+      {loading ? (
         <Flex align="center" justify="center" w="100%" mt={20}>
           <Spinner
             color="gray.900"
@@ -136,36 +139,42 @@ const procedures = () => {
         </Flex>
       ) : (
         <>
-          {procedures?.map((procedure) => (
-            <Link key={procedure.id} href={`procedures/${procedure.id}`}>
-              <Flex
-                cursor="pointer"
-                w="100%"
-                p={4}
-                bg="clinic.400"
-                direction="row"
-                rounded="4"
-                mb={2}
-                justifyContent="space-between"
-                alignItems="center"
-              >
-                <Flex
-                  direction="row"
-                  alignItems="center"
-                  justifyContent="center"
-                >
-                  <IoMdPricetag size={28} color="#fba931" />
-                  <Text color="#fff" ml={4} noOfLines={2} fontWeight="bold">
-                    {procedure.name}
-                  </Text>
-                </Flex>
+          {procedures.length === 0 ? (
+            <Text fontSize="xl">Nenhum procedimento encontrado.</Text>
+          ) : (
+            <>
+              {procedures?.map((procedure) => (
+                <Link key={procedure.id} href={`procedures/${procedure.id}`}>
+                  <Flex
+                    cursor="pointer"
+                    w="100%"
+                    p={4}
+                    bg="clinic.400"
+                    direction="row"
+                    rounded="4"
+                    mb={2}
+                    justifyContent="space-between"
+                    alignItems="center"
+                  >
+                    <Flex
+                      direction="row"
+                      alignItems="center"
+                      justifyContent="center"
+                    >
+                      <IoMdPricetag size={28} color="#fba931" />
+                      <Text color="#fff" ml={4} noOfLines={2} fontWeight="bold">
+                        {procedure.name}
+                      </Text>
+                    </Flex>
 
-                <Text color="#fff" fontWeight="bold">
-                  Preço: R$ {procedure.price}
-                </Text>
-              </Flex>
-            </Link>
-          ))}
+                    <Text color="#fff" fontWeight="bold">
+                      Preço: R$ {procedure.price}
+                    </Text>
+                  </Flex>
+                </Link>
+              ))}
+            </>
+          )}
         </>
       )}
     </Sidebar>

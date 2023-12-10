@@ -106,7 +106,6 @@ export default function EditProcedure({ params }: { params: { id: string } }) {
       window.location.href = "/procedures";
     } catch (error) {
       console.log(error);
-    } finally {
       setLoading(false);
     }
   };

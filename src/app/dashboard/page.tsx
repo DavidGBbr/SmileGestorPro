@@ -31,6 +31,7 @@ export interface ScheduleProps {
 const Dashboard = () => {
   const [schedule, setSchedule] = useState<ScheduleProps[]>([]);
   const [service, setService] = useState<ScheduleProps>();
+  const [loading, setLoading] = useState(true);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   useEffect(() => {
@@ -39,16 +40,18 @@ const Dashboard = () => {
 
   useEffect(() => {
     const getSchedule = async () => {
-      const apiClient = setupAPIClient();
-      const response = await apiClient.get("/schedule");
-      setSchedule(response.data);
+      try {
+        const apiClient = setupAPIClient();
+        const response = await apiClient.get("/schedule");
+        setSchedule(response.data);
+      } catch (error) {
+        console.log(error);
+        setSchedule([]);
+      } finally {
+        setLoading(false);
+      }
     };
-    try {
-      getSchedule();
-    } catch (error) {
-      console.log(error);
-      setSchedule([]);
-    }
+    getSchedule();
   }, []);
 
   const formatDate = (date: string) => {
@@ -105,7 +108,7 @@ const Dashboard = () => {
             </Link>
           </Flex>
 
-          {!schedule.length ? (
+          {loading ? (
             <Flex align="center" justify="center" w="100%" mt={20}>
               <Spinner
                 color="gray.900"
@@ -117,75 +120,81 @@ const Dashboard = () => {
             </Flex>
           ) : (
             <>
-              {schedule?.map((item) => (
-                <ChakraLink
-                  key={item?.id}
-                  onClick={() => handleOpenModal(item)}
-                  w="100%"
-                  m={0}
-                  p={0}
-                  mt={1}
-                  bg="transparent"
-                  style={{ textDecoration: "none" }}
-                  color="#fff"
-                >
-                  <Flex
-                    w="100%"
-                    direction={isMobile ? "column" : "row"}
-                    p={4}
-                    rounded={4}
-                    mb={2}
-                    bg="clinic.400"
-                    justify="space-between"
-                    align={isMobile ? "flex-start" : "center"}
-                  >
-                    <Flex
-                      direction="row"
-                      mb={isMobile ? 2 : 0}
-                      align="center"
-                      justify="center"
+              {schedule.length === 0 ? (
+                <Text fontSize="xl">Nenhum agendamento encontrado.</Text>
+              ) : (
+                <>
+                  {schedule?.map((item) => (
+                    <ChakraLink
+                      key={item?.id}
+                      onClick={() => handleOpenModal(item)}
+                      w="100%"
+                      m={0}
+                      p={0}
+                      mt={1}
+                      bg="transparent"
+                      style={{ textDecoration: "none" }}
+                      color="#fff"
                     >
-                      <IoMdPerson size={28} color="orange" />
-                      <Text fontWeight="bold" ml={4} noOfLines={1}>
-                        {item?.customer}
-                      </Text>
-                    </Flex>
+                      <Flex
+                        w="100%"
+                        direction={isMobile ? "column" : "row"}
+                        p={4}
+                        rounded={4}
+                        mb={2}
+                        bg="clinic.400"
+                        justify="space-between"
+                        align={isMobile ? "flex-start" : "center"}
+                      >
+                        <Flex
+                          direction="row"
+                          mb={isMobile ? 2 : 0}
+                          align="center"
+                          justify="center"
+                        >
+                          <IoMdPerson size={28} color="orange" />
+                          <Text fontWeight="bold" ml={4} noOfLines={1}>
+                            {item?.customer}
+                          </Text>
+                        </Flex>
 
-                    <Flex
-                      direction="row"
-                      mb={isMobile ? 2 : 0}
-                      align="center"
-                      justify="center"
-                    >
-                      <Text fontWeight="bold" ml={4} noOfLines={1}>
-                        {item?.procedure?.name}
-                      </Text>
-                    </Flex>
+                        <Flex
+                          direction="row"
+                          mb={isMobile ? 2 : 0}
+                          align="center"
+                          justify="center"
+                        >
+                          <Text fontWeight="bold" ml={4} noOfLines={1}>
+                            {item?.procedure?.name}
+                          </Text>
+                        </Flex>
 
-                    <Flex
-                      direction="row"
-                      mb={isMobile ? 2 : 0}
-                      align="center"
-                      justify="center"
-                    >
-                      <Text fontWeight="bold" ml={4} noOfLines={1}>
-                        {formatDate(item?.date)}
-                      </Text>
-                    </Flex>
+                        <Flex
+                          direction="row"
+                          mb={isMobile ? 2 : 0}
+                          align="center"
+                          justify="center"
+                        >
+                          <Text fontWeight="bold" ml={4} noOfLines={1}>
+                            {formatDate(item?.date)}
+                          </Text>
+                        </Flex>
 
-                    <Flex
-                      direction="row"
-                      mb={isMobile ? 2 : 0}
-                      align="center"
-                      justify="center"
-                    >
-                      <Text fontWeight="bold" ml={4} noOfLines={1}>
-                        R$ {item?.procedure?.price}
-                      </Text>
-                    </Flex>
-                  </Flex>
-                </ChakraLink>
-              ))}
+                        <Flex
+                          direction="row"
+                          mb={isMobile ? 2 : 0}
+                          align="center"
+                          justify="center"
+                        >
+                          <Text fontWeight="bold" ml={4} noOfLines={1}>
+                            R$ {item?.procedure?.price}
+                          </Text>
+                        </Flex>
+                      </Flex>
+                    </ChakraLink>
+                  ))}
+                </>
+              )}
             </>
           )}
         </Flex>

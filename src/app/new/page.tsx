@@ -37,14 +37,16 @@ export default function New() {
       if (response.data === null) {
         window.location.href = "/dashboard";
       }
+
+      try {
+        getProcedures();
+      } catch (error) {
+        console.log(error);
+        window.location.href = "/dashboard";
+      }
     };
 
-    try {
-      getProcedures();
-    } catch (error) {
-      console.log(error);
-      window.location.href = "/dashboard";
-    }
+    getProcedures();
   }, []);
 
   useEffect(() => {
@@ -81,7 +83,6 @@ export default function New() {
     } catch (error) {
       alert("Erro ao registrar");
       console.error("Erro ao agendar: " + error);
-    } finally {
       setLoading(false);
     }
   };

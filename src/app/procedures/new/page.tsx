@@ -74,7 +74,6 @@ export default function newProcedure() {
     } catch (error) {
       console.log(error);
       alert("Erro ao cadastrar.");
-    } finally {
       setLoading(false);
     }
   };
