@@ -13,6 +13,7 @@ import { Sidebar } from "@/components/sidebar";
 import Link from "next/link";
 import { AuthContext } from "@/context/AuthContext";
 import { setupAPIClient } from "@/services/api";
+import { toast } from "react-toastify";
 
 interface ProfileProps {
   id: string;
@@ -71,11 +72,12 @@ export default function profile() {
         name: name,
         address: address,
       });
-      alert("Dados alterados com sucesso!");
+      toast.success("Dados alterados com sucesso!");
     };
     try {
       updateUser();
     } catch (error) {
+      toast.error("Erro ao alterar dados!");
       console.log("Erro ao alterar dados:", error);
     }
   };

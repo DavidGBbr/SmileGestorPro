@@ -15,6 +15,7 @@ import { FiChevronLeft } from "react-icons/fi";
 import { ChangeEvent, useEffect, useState } from "react";
 import Link from "next/link";
 import { setupAPIClient } from "@/services/api";
+import { toast } from "react-toastify";
 
 interface ProcedureType {
   id: string;
@@ -102,9 +103,9 @@ export default function EditProcedure({ params }: { params: { id: string } }) {
         status: status === "disabled" ? true : false,
         procedure_id: procedure?.id,
       });
-      alert("Procedimento atualizado com sucesso!");
       window.location.href = "/procedures";
     } catch (error) {
+      toast.error("Erro ao atualizar!");
       console.log(error);
       setLoading(false);
     }

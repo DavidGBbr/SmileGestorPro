@@ -3,6 +3,7 @@ import { Sidebar } from "@/components/sidebar";
 import { setupAPIClient } from "@/services/api";
 import { Button, Flex, Heading, Input, Select } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
 interface ProcedureProps {
   id: string;
@@ -61,12 +62,8 @@ export default function New() {
   };
 
   const handleRegister = async () => {
-    if (customer === "") {
-      alert("Preencha o nome do cliente");
-      return;
-    }
-
-    if (!procedureSelected || !datetime) {
+    if (customer === "" || !procedureSelected || !datetime) {
+      toast.warn("Preencha todos os campos!");
       return;
     }
 
@@ -81,7 +78,7 @@ export default function New() {
 
       window.location.href = "/dashboard";
     } catch (error) {
-      alert("Erro ao registrar");
+      toast.error("Erro ao agendar!");
       console.error("Erro ao agendar: " + error);
       setLoading(false);
     }

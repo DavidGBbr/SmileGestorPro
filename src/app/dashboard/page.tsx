@@ -15,6 +15,7 @@ import { IoMdPerson } from "react-icons/io";
 import { setupAPIClient } from "@/services/api";
 import { ModalInfo } from "@/components/modal";
 import { Spinner } from "@chakra-ui/react";
+import { toast } from "react-toastify";
 
 export interface ScheduleProps {
   id: string;
@@ -83,11 +84,11 @@ const Dashboard = () => {
       });
 
       const filterSchedule = schedule.filter((item) => item.id !== id);
-
+      toast.success("Serviço finalizado!");
       setSchedule(filterSchedule);
     } catch (error) {
       console.log(error);
-      alert("Erro ao finalizar este serviço");
+      toast.error("Erro ao finalizar serviço!");
     } finally {
       onClose();
     }

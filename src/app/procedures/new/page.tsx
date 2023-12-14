@@ -13,6 +13,7 @@ import {
 import Link from "next/link";
 import { FiChevronLeft } from "react-icons/fi";
 import { setupAPIClient } from "@/services/api";
+import { toast } from "react-toastify";
 
 export default function newProcedure() {
   const [subscription, setSubscription] = useState(false);
@@ -70,10 +71,11 @@ export default function newProcedure() {
       setName("");
       setPrice("");
 
+      toast.success("Procedimento cadastrado!");
       window.location.href = "/procedures";
     } catch (error) {
       console.log(error);
-      alert("Erro ao cadastrar.");
+      toast.error("Erro ao cadastrar.");
       setLoading(false);
     }
   };

@@ -3,6 +3,7 @@ import { createContext, ReactNode, useEffect, useState } from "react";
 import { destroyCookie, parseCookies, setCookie } from "nookies";
 import Router from "next/router";
 import { api } from "../services/apiClient";
+import { toast } from "react-toastify";
 
 interface AuthContextData {
   user: UserProps;
@@ -102,9 +103,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
         });
 
         api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+        toast.success("Logado com sucesso!");
         window.location.href = "/dashboard";
         resolve(true);
       } catch (error) {
+        toast.error("Erro ao acessar!");
         console.log("Erro ao fazer login: ", error);
         reject(false);
       } finally {
@@ -124,9 +127,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
           password,
         });
 
+        toast.success("Usuário cadastrado!");
         window.location.href = "/login";
         resolve(true);
       } catch (error) {
+        toast.error("Erro ao cadastrar!");
         console.error(error);
         reject(false);
       } finally {
@@ -141,6 +146,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       window.location.href = "/";
       setUser(null);
     } catch (error) {
+      toast.error("Erro ao sair!");
       console.log("Erro ao fazer logout: ", error);
     }
   }
