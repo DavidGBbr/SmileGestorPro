@@ -76,11 +76,7 @@ export default function Home() {
         mt={10}
         py={isMobile ? 3 : 0}
       >
-        <Box boxSize="lg" display={isMobile ? "none" : "initial"}>
-          <Image src="/images/logo_home.svg" alt="Home page logo" />
-        </Box>
-
-        <Flex direction="column" w={isMobile ? "100%" : "50%"} gap={3}>
+        <Flex direction="column" w={isMobile ? "100%" : "50%"} gap={5}>
           <Text fontSize="5xl" as="b" lineHeight={1}>
             Aprimore a eficiência da sua clínica com o SmileGestor Pro.
           </Text>
@@ -114,6 +110,10 @@ export default function Home() {
             Abrir uma conta
           </Button>
         </Flex>
+
+        <Box boxSize="lg" display={isMobile ? "none" : "initial"}>
+          <Image src="/images/logo_home.svg" alt="Home page logo" />
+        </Box>
       </Flex>
     </Flex>
   );
