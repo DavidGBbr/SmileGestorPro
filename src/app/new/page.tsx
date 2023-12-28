@@ -27,20 +27,18 @@ export default function New() {
 
   useEffect(() => {
     const getProcedures = async () => {
-      const apiClient = setupAPIClient();
-      const response = await apiClient.get("/procedures", {
-        params: {
-          status: true,
-        },
-      });
-      setProcedures(response.data);
-
-      if (response.data === null) {
-        window.location.href = "/dashboard";
-      }
-
       try {
-        getProcedures();
+        const apiClient = setupAPIClient();
+        const response = await apiClient.get("/procedures", {
+          params: {
+            status: true,
+          },
+        });
+        setProcedures(response.data);
+
+        if (response.data === null) {
+          window.location.href = "/dashboard";
+        }
       } catch (error) {
         console.log(error);
         window.location.href = "/dashboard";
