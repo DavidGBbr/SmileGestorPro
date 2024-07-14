@@ -1,4 +1,5 @@
 "use client";
+import { createSchedule } from "@/actions/schedule/CreateSchedule";
 import { Sidebar } from "@/components/sidebar";
 import { setupAPIClient } from "@/services/api";
 import { Button, Flex, Heading, Input, Select } from "@chakra-ui/react";
@@ -17,7 +18,7 @@ export default function New() {
   const [customer, setCustomer] = useState("");
   const [procedures, setProcedures] = useState<ProcedureProps[]>([]);
   const [procedureSelected, setProcedureSelected] =
-    useState<ProcedureProps | null>();
+    useState<ProcedureProps | null>(null);
   const [datetime, setDatetime] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -67,13 +68,11 @@ export default function New() {
 
     try {
       setLoading(true);
-      const apiClient = setupAPIClient();
-      await apiClient.post("/schedule", {
-        customer: customer,
+      await createSchedule({
+        customer,
         procedure_id: procedureSelected.id,
         date: `${datetime}:00.000Z`,
       });
-
       window.location.href = "/dashboard";
     } catch (error) {
       toast.error("Erro ao agendar!");
