@@ -14,6 +14,7 @@ import Link from "next/link";
 import { FiChevronLeft } from "react-icons/fi";
 import { setupAPIClient } from "@/services/api";
 import { toast } from "react-toastify";
+import { createProcedure } from "@/actions/procedure/CreateProcedure";
 
 export default function newProcedure() {
   const [subscription, setSubscription] = useState(false);
@@ -62,12 +63,10 @@ export default function newProcedure() {
 
     try {
       setLoading(true);
-      const apiClient = setupAPIClient();
-      await apiClient.post("/procedure", {
+      await createProcedure({
         name: name,
         price: Number(price.replace(",", ".")),
       });
-
       setName("");
       setPrice("");
 
