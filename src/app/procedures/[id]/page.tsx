@@ -16,6 +16,7 @@ import { ChangeEvent, useEffect, useState } from "react";
 import Link from "next/link";
 import { setupAPIClient } from "@/services/api";
 import { toast } from "react-toastify";
+import { updateProcedure } from "@/actions/procedure/UpdateProcedure";
 
 interface ProcedureType {
   id: string;
@@ -96,8 +97,7 @@ export default function EditProcedure({ params }: { params: { id: string } }) {
 
     try {
       setLoading(true);
-      const apiClient = setupAPIClient();
-      await apiClient.put("/procedure", {
+      await updateProcedure({
         name: name,
         price: Number(price),
         status: status === "disabled" ? true : false,
